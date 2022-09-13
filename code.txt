@@ -1,0 +1,453 @@
+LCS
+from ctypes import sizeof
+
+
+def longestCommonSubSequence(s1,s2):
+    seq1 = ' '+s1
+    seq2 = ' '+s2
+    m = len(seq1)
+    n = len(seq2)
+    mat = [[0 for _ in range(m)] for __ in range(n)]
+    #print(mat[3][1])
+    for j in range(1,m):
+        for i in range(1,n):
+            if seq1[j] == seq2[i]:
+                mat[i][j] = mat[i-1][j-1] + 1
+            else:
+                mat[i][j] = max(mat[i-1][j],mat[i][j-1])
+    return mat
+
+
+print(max(max(longestCommonSubSequence('caabc','aababc'))))
+
+-----------------------------------------------------------------------
+def MatrixMultiplocation(p):
+    n = len(p)-1
+    m = [[float('inf') for _ in range(n)] for __ in range(n)]
+    return LookUpChain(m,p,0,n-1)
+
+def LookUpChain(m,p,i,j):
+    if m[i][j] < float('inf'): return m[i][j]
+    print('calling for ',i,j)
+    if i==j: return 0
+    for k in range(i,j):
+        q = LookUpChain(m,p,i,k)+LookUpChain(m,p,k+1,j)+ p[i]*p[k+1]*p[j+1]
+        if q < m[i][j]:
+            m[i][j] = q
+    return m[i][j]
+
+print(MatrixMultiplocation([3,4,5,8]))
+
+-----------------------------------------------------------------------
+def BottomUpRodCut(p,n):
+    r = [0]*(n+1)
+    for j in range(1,n+1):
+        q = float('-inf')
+        for i in range(1,j+1):
+            if q < p[i]+r[j-i]:
+                q = p[i]+r[j-i]
+        r[j] = q
+    return (r)
+
+denominations = [0,1, 5, 8, 9, 10, 17, 20, 24, 30]
+print(BottomUpRodCut(denominations,5))
+
+
+-----------------------------------------------------------------------
+#--------------------------------------------------------
+'''
+    if single element,return it is max
+    if two elements find max of two
+    if more than two iterate over all of it's sub sequence
+'''
+# cnt = 0
+# def findMaxSubSequence(arr):
+#     global cnt
+#     n = len(arr)
+#     if n == 1: return arr[0]
+#     if n == 2: return max(arr[0],arr[1])
+#     mv = arr[0]
+#     for wl in range(1,n+1):
+#         i = 0
+#         while i < n-wl+1:
+#             cnt =  cnt + 1
+#             mv = max(mv,sum(arr[i:i+wl]))
+#             print(i,i+wl)
+#             i = i + 1
+#     return mv
+# arr = [9, -3, 4, -1]#, -2, 1, 5, -3]
+# print(findMaxSubSequence(arr))
+# print(cnt)
+def maxSubArraySum(a,size):
+    max_so_far =a[0]
+    curr_max = a[0]
+    # si =0
+    # ei = 0
+    for i in range(1,size):
+        #if a[i] > curr_max + a[i]:
+        # if 0 > curr_max: # if current sum is negetive, select current item as maximum value
+        #     curr_max = a[i]
+        #     si = i
+        #     ei = si
+        # else:
+        #     curr_max = curr_max + a[i]
+        #     ei = ei + 1#
+        curr_max = max(a[i], curr_max + a[i])# consider next element
+        max_so_far = max(max_so_far,curr_max)
+    return max_so_far
+
+# Driver function to check the above function
+a = [-2, -3, -4]#, -1, -2, 1, 5, -3]
+a = [1,2,6,4,3,1,-1]
+print("Maximum contiguous sum is" , maxSubArraySum(a,len(a)))
+
+#This code is contributed by _Devesh Agrawal_
+
+-----------------------------------------------------------------------
+def recDC(coinValueList,change,knownResults):
+    minCoins = change
+    if change in coinValueList:
+        knownResults[change] = 1
+        return 1
+    elif knownResults[change] > 0:
+        return knownResults[change]
+    else:
+        for i in [c for c in coinValueList if c <= change]:
+            numCoins = 1 + recDC(coinValueList, change-i,knownResults)
+    if numCoins < minCoins:
+        minCoins = numCoins
+        knownResults[change] = minCoins
+    return minCoins
+
+print(recDC([1,5,10,25],63,[0]*64))
+
+-----------------------------------------------------------------------
+# Dynamic programming Python implementation
+# of LIS problem
+
+# lis returns length of the longest
+# increasing subsequence in arr of size n
+
+
+def lis(arr):
+	n = len(arr)
+
+	# Declare the list (array) for LIS and
+	# initialize LIS values for all indexes
+	lis = [1]*n
+
+	# Compute optimized LIS values in bottom up manner
+	for i in range(1, n):
+		for j in range(0, i):
+			if arr[i] > arr[j] and lis[i] < lis[j] + 1:
+				lis[i] = lis[j]+1
+
+	# Initialize maximum to 0 to get
+	# the maximum of all LIS
+	maximum = 0
+
+	# Pick maximum of all LIS values
+	#for i in range(n):
+	#	maximum = max(maximum, lis[i])
+
+	return max(lis)#imum
+# end of lis function
+
+
+# Driver program to test above function
+arr = [10, 22, 9, 33, 21, 50, 41, 60]
+print ("Length of lis is", lis(arr))
+# This code is contributed by Nikhil Kumar Singh
+
+-----------------------------------------------------------------------
+
+class Box:
+    def __init__(self,w,h,d) -> None:
+        self.w = w
+        self.h = h
+        self.d = d
+    
+    def __str__(self) -> str:
+        return "w = {}, h = {}, d = {}".format(self.w,self.h,self.d)
+
+def getBoxPermutations(box):
+    return [Box(box.w,box.h,box.d),Box(box.h,box.d,box.w),Box(box.d,box.w,box.h)]
+
+# generate all of the permutations of the boxes
+# concatenate all of box permutations
+# sort based on any side say (w)
+# find longest increasing sequence for (d) here (h) will be controlling element
+#  i.e., in longest increasing sequence check values of 'd' and maintain 'h', instead of adding 1 add 'h'
+
+
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+# A Dynamic Programming based Python
+# Program for 0-1 Knapsack problem
+# Returns the maximum value that can
+# be put in a knapsack of capacity W
+
+
+def knapSack(W, wt, val, n):
+ K = [[0 for x in range(W + 1)] for x in range(n + 1)]
+
+ # Build table K[][] in bottom up manner
+ for i in range(n + 1):
+  for w in range(W + 1):
+   if i == 0 or w == 0:
+    K[i][w] = 0
+   elif wt[i-1] <= w:
+    K[i][w] = max(val[i-1]
+      + K[i-1][w-wt[i-1]],
+       K[i-1][w])
+   else:
+    K[i][w] = K[i-1][w]
+
+ return K[n][W]
+
+
+# Driver code
+val = [60, 100, 120]
+wt = [10, 20, 30]
+W = 50
+n = len(val)
+print(knapSack(W, wt, val, n))
+
+# This code is contributed by Bhavya Jain
+
+-----------------------------------------------------------------------
+def balancePartition(arr):
+    a = []
+    b = []
+    sumA = 0
+    sumB = 0
+    if len(arr) < 2: 
+        return 'error'
+    if len(arr) == 2: 
+        return(arr[0],arr[1])
+    sa = sorted(arr)
+    sa.reverse()
+    a.append(sa[0])
+    b.append(sa[1])
+    sumA = sa[0]
+    sumB = sa[1]
+    for i in range(2,len(arr)):
+        if sumA > sumB:
+            b.append(sa[i])
+            sumB = sumB + sa[i]
+        else:
+            a.append(sa[i])
+            sumA = sumA + sa[i]
+    return(a,b)
+
+arr = [2,7,3,6,8,11]#,2,3]
+
+print(balancePartition(arr))
+-----------------------------------------------------------------------
+def editDistance(seq1,seq2):
+    m = len(seq1)
+    n = len(seq2)
+    mat = [[0 for i in range(m+1)] for _ in range(n+1)]
+    for i in range(n+1):
+        for j in range(m+1):
+            if i == 0:
+                mat[i][j] = j
+            elif j == 0:
+                mat[i][j] = i
+            elif seq1[j-1] == seq2[i-1]:
+                mat[i][j] = mat[i-1][j-1]
+            else:
+                mat[i][j] = 1 + min(mat[i-1][j-1],mat[i-1][j],mat[i][j-1])
+    return mat
+s1 = 'saturday'
+s2 = 'sunday'
+print(editDistance(s1,s2))
+-----------------------------------------------------------------------
+# Returns count of all possible
+# parenthesizations that lead to
+# result true for a boolean
+# expression with symbols like
+# true and false and operators
+# like &, | and ^ filled between symbols
+
+
+def countParenth(symb, oper, n):
+ F = [[0 for i in range(n + 1)]
+  for i in range(n + 1)]
+ T = [[0 for i in range(n + 1)]
+  for i in range(n + 1)]
+
+ # Fill diagonal entries first
+ # All diagonal entries in
+ # T[i][i] are 1 if symbol[i]
+ # is T (true). Similarly, all
+ # F[i][i] entries are 1 if
+ # symbol[i] is F (False)
+ for i in range(n):
+  if symb[i] == 'F':
+   F[i][i] = 1
+  else:
+   F[i][i] = 0
+
+  if symb[i] == 'T':
+   T[i][i] = 1
+  else:
+   T[i][i] = 0
+
+ # Now fill T[i][i+1], T[i][i+2],
+ # T[i][i+3]... in order And
+ # F[i][i+1], F[i][i+2],
+ # F[i][i+3]... in order
+ for gap in range(1, n):
+  i = 0
+  for j in range(gap, n):
+   T[i][j] = F[i][j] = 0
+   for g in range(gap):
+
+    # Find place of parenthesization
+    # using current value of gap
+    k = i + g
+
+    # Store Total[i][k] and Total[k+1][j]
+    tik = T[i][k] + F[i][k]
+    tkj = T[k + 1][j] + F[k + 1][j]
+
+    # Follow the recursive formulas
+    # according to the current operator
+    if oper[k] == '&':
+     T[i][j] += T[i][k] * T[k + 1][j]
+     F[i][j] += (tik * tkj - T[i][k] *
+        T[k + 1][j])
+    if oper[k] == '|':
+     F[i][j] += F[i][k] * F[k + 1][j]
+     T[i][j] += (tik * tkj - F[i][k] *
+        F[k + 1][j])
+    if oper[k] == '^':
+     T[i][j] += (F[i][k] * T[k + 1][j] +
+        T[i][k] * F[k + 1][j])
+     F[i][j] += (T[i][k] * T[k + 1][j] +
+        F[i][k] * F[k + 1][j])
+   i += 1
+ return T[0][n - 1]
+
+
+# Driver Code
+symbols = "TTFT"
+operators = "|&^"
+n = len(symbols)
+
+# There are 4 ways
+# ((T|T)&(F^T)), (T|(T&(F^T))),
+# (((T|T)&F)^T) and (T|((T&F)^T))
+print(countParenth(symbols, operators, n))
+
+# This code is contributed by
+# sahil shelangia
+
+-----------------------------------------------------------------------
+def optimalStrategyOfGame(arr, n):
+ memo = {}
+
+ # recursive top down memoized solution
+ def solve(i, j):
+  if i > j or i >= n or j < 0:
+   return 0
+
+  k = (i, j)
+  if k in memo:
+   return memo[k]
+
+  # if the user chooses ith coin, the opponent can choose from i+1th or jth coin.
+  # if he chooses i+1th coin, user is left with [i+2,j] range.
+  # if opp chooses jth coin, then user is left with [i+1,j-1] range to choose from.
+  # Also opponent tries to choose
+  # in such a way that the user has minimum value left.
+  option1 = arr[i] + min(solve(i+2, j), solve(i+1, j-1))
+
+  # if user chooses jth coin, opponent can choose ith coin or j-1th coin.
+  # if opp chooses ith coin,user can choose in range [i+1,j-1].
+  # if opp chooses j-1th coin, user can choose in range [i,j-2].
+  option2 = arr[j] + min(solve(i+1, j-1), solve(i, j-2))
+
+  # since the user wants to get maximum money
+  memo[k] = max(option1, option2)
+  return memo[k]
+
+ return solve(0, n-1)
+
+-----------------------------------------------------------------------
+def calculateDistance(distances,noc):
+    ds = [[float('inf') for i in range(noc)] for i in range(noc)]
+    ds[0][1] = distances[(0,1)]
+    for i in range(1,noc+1):
+        ds[0][i] = distances[(i,i)]+ ds[0][i-1]
+    for i in range(1,noc+1):
+        ds[i][0] = distances[(i,i)]+ ds[i-1][0]
+    for i in range(noc+1):
+        for j in range(1,noc+1):
+            ds[i][j] = min([ds[i-1][j-1]+distances[(i,j)]])
+            
+    return ds
+
+
+
+dis = {
+    (1,1):3,
+    (2,2):5,
+    (3,3):2
+}
+
+print(calculateDistance(dis,3))
+
+'''
+Given : Ordered Sequence of cities and distances between cities
+let A, B & C are cities
+distance b/w cities are
+d(A,B), d(A,C), d(B,C)
+Two persons: X & Y
+base Case: Person X travels all of the cities
+Iterative Case: Move Persone City A, B, C.... and maintain their cost and store minimum           Person Y travels One City
+
+'''
+-----------------------------------------------------------------------
+def calculateDistance(distances,noc):
+    ds = [[float('inf') for i in range(noc)] for i in range(noc)]
+    ds[0][1] = distances[(0,1)]
+    for i in range(1,noc+1):
+        ds[0][i] = distances[(i,i)]+ ds[0][i-1]
+    for i in range(1,noc+1):
+        ds[i][0] = distances[(i,i)]+ ds[i-1][0]
+    for i in range(noc+1):
+        for j in range(1,noc+1):
+            ds[i][j] = min([ds[i-1][j-1]+distances[(i,j)]])
+            
+    return ds
+
+
+
+dis = {
+    (1,1):3,
+    (2,2):5,
+    (3,3):2
+}
+
+print(calculateDistance(dis,3))
+
+'''
+Given : Ordered Sequence of cities and distances between cities
+let A, B & C are cities
+distance b/w cities are
+d(A,B), d(A,C), d(B,C)
+Two persons: X & Y
+base Case: Person X travels all of the cities
+Iterative Case: Move Persone City A, B, C.... and maintain their cost and store minimum           Person Y travels One City
+
+'''
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
